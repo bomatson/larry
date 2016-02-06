@@ -3,6 +3,7 @@ var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var vulgar_mode = false;
+var reasonableUncertainty = false;
 var start_timestamp;
 var marquee = document.getElementsByClassName("marq");
 
@@ -12,6 +13,7 @@ if (!('webkitSpeechRecognition' in window)) {
   var recognition = new webkitSpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = true;
+  recognition.maxAlternatives = 500;
   recognition.onstart = function() {
     recognizing = true;
     showInfo('info_speak_now');
@@ -54,6 +56,9 @@ if (!('webkitSpeechRecognition' in window)) {
       for(var i = 0; i < marquee.length; i++) {
         marquee[i].innerHTML = "WHAT THE FUCK DO YOU WANT";
       }
+    }else if((final_transcript_check == "YOU ARE STUPID") || (final_transcript_check == "YOU'RE STUPID")){
+      respond("I'm not pooping");
+      reasonableUncertainty = true;
     }else{
       var millis = new Date().getMilliseconds();
       if(((millis%3)==0) && vulgar_mode){
@@ -80,10 +85,11 @@ if (!('webkitSpeechRecognition' in window)) {
     //   recognition.stop();
     // }
     for (var i = event.resultIndex; i < event.results.length; ++i) {
+      var secondIndex = reasonableUncertainty?(Math.ceil(.66*event.results[i].length)-1):0;
       if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;//larry_parse(event.results[i][0].transcript);
+        final_transcript += event.results[i][secondIndex].transcript;//larry_parse(event.results[i][0].transcript);
       } else {
-        interim_transcript += event.results[i][0].transcript;//larry_parse(event.results[i][0].transcript);
+        interim_transcript += event.results[i][secondIndex].transcript;//larry_parse(event.results[i][0].transcript);
       }
     }
     final_transcript = capitalize(final_transcript);
