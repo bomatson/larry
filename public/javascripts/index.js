@@ -1,93 +1,15 @@
-var langs =
-[['Afrikaans',       ['af-ZA']],
- ['Bahasa Indonesia',['id-ID']],
- ['Bahasa Melayu',   ['ms-MY']],
- ['Català',          ['ca-ES']],
- ['Čeština',         ['cs-CZ']],
- ['Deutsch',         ['de-DE']],
- ['English',         ['en-AU', 'Australia'],
-                     ['en-CA', 'Canada'],
-                     ['en-IN', 'India'],
-                     ['en-NZ', 'New Zealand'],
-                     ['en-ZA', 'South Africa'],
-                     ['en-GB', 'United Kingdom'],
-                     ['en-US', 'United States']],
- ['Español',         ['es-AR', 'Argentina'],
-                     ['es-BO', 'Bolivia'],
-                     ['es-CL', 'Chile'],
-                     ['es-CO', 'Colombia'],
-                     ['es-CR', 'Costa Rica'],
-                     ['es-EC', 'Ecuador'],
-                     ['es-SV', 'El Salvador'],
-                     ['es-ES', 'España'],
-                     ['es-US', 'Estados Unidos'],
-                     ['es-GT', 'Guatemala'],
-                     ['es-HN', 'Honduras'],
-                     ['es-MX', 'México'],
-                     ['es-NI', 'Nicaragua'],
-                     ['es-PA', 'Panamá'],
-                     ['es-PY', 'Paraguay'],
-                     ['es-PE', 'Perú'],
-                     ['es-PR', 'Puerto Rico'],
-                     ['es-DO', 'República Dominicana'],
-                     ['es-UY', 'Uruguay'],
-                     ['es-VE', 'Venezuela']],
- ['Euskara',         ['eu-ES']],
- ['Français',        ['fr-FR']],
- ['Galego',          ['gl-ES']],
- ['Hrvatski',        ['hr_HR']],
- ['IsiZulu',         ['zu-ZA']],
- ['Íslenska',        ['is-IS']],
- ['Italiano',        ['it-IT', 'Italia'],
-                     ['it-CH', 'Svizzera']],
- ['Magyar',          ['hu-HU']],
- ['Nederlands',      ['nl-NL']],
- ['Norsk bokmål',    ['nb-NO']],
- ['Polski',          ['pl-PL']],
- ['Português',       ['pt-BR', 'Brasil'],
-                     ['pt-PT', 'Portugal']],
- ['Română',          ['ro-RO']],
- ['Slovenčina',      ['sk-SK']],
- ['Suomi',           ['fi-FI']],
- ['Svenska',         ['sv-SE']],
- ['Türkçe',          ['tr-TR']],
- ['български',       ['bg-BG']],
- ['Pусский',         ['ru-RU']],
- ['Српски',          ['sr-RS']],
- ['한국어',            ['ko-KR']],
- ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
-                     ['cmn-Hans-HK', '普通话 (香港)'],
-                     ['cmn-Hant-TW', '中文 (台灣)'],
-                     ['yue-Hant-HK', '粵語 (香港)']],
- ['日本語',           ['ja-JP']],
- ['Lingua latīna',   ['la']]];
-for (var i = 0; i < langs.length; i++) {
-  select_language.options[i] = new Option(langs[i][0], i);
-}
-select_language.selectedIndex = 6;
-updateCountry();
-select_dialect.selectedIndex = 6;
 showInfo('info_start');
-function updateCountry() {
-  for (var i = select_dialect.options.length - 1; i >= 0; i--) {
-    select_dialect.remove(i);
-  }
-  var list = langs[select_language.selectedIndex];
-  for (var i = 1; i < list.length; i++) {
-    select_dialect.options.add(new Option(list[i][1], list[i][0]));
-  }
-  select_dialect.style.visibility = list[1].length == 1 ? 'hidden' : 'visible';
-}
 var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
+
 if (!('webkitSpeechRecognition' in window)) {
   upgrade();
 } else {
   start_button.style.display = 'inline-block';
   var recognition = new webkitSpeechRecognition();
-  recognition.continuous = true;
+  recognition.continuous = false;
   recognition.interimResults = true;
   recognition.onstart = function() {
     recognizing = true;
@@ -124,6 +46,17 @@ if (!('webkitSpeechRecognition' in window)) {
       showInfo('info_start');
       return;
     }
+
+    // ************************************************/
+    //console.log(final_transcript);
+    var millis = new Date().getMilliseconds();
+    if((millis%3)==0){
+      var responses = ["NO I don't feel like it","Fuck you","Nope not doing that","Hey have you tried this game called Boom Beach it's pretty amazing","Maybe not, but I could really use me a soilent dick right now"];
+      respond(responses[Math.floor(Math.random() * responses.length)]);
+    } else {
+      findAnswerTo(final_transcript);
+    }
+
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -133,12 +66,18 @@ if (!('webkitSpeechRecognition' in window)) {
     }
   };
   recognition.onresult = function(event) {
+    console.log(event)
     var interim_transcript = '';
+    // if(event.resultIndex > 0) {
+    //   recognizing = false;
+    //   console.log('IM DONE')
+    //   recognition.stop();
+    // }
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;
+        final_transcript += larry_parse(event.results[i][0].transcript);
       } else {
-        interim_transcript += event.results[i][0].transcript;
+        interim_transcript += larry_parse(event.results[i][0].transcript);
       }
     }
     final_transcript = capitalize(final_transcript);
@@ -148,6 +87,19 @@ if (!('webkitSpeechRecognition' in window)) {
       showButtons('inline-block');
     }
   };
+}
+function larry_parse(text_in) {
+  var text_split = text_in.split(" ");
+  var text_out = "";
+
+  var additions = ["shit","stupid","helpful","crap"];
+  
+  for(var i=0; i<text_split.length; i++){
+    text_out += text_split[i]+" ";
+    //text_out += text_split[i] + " " + additions[Math.floor(Math.random() * additions.length)] + " ";
+  }
+
+  return text_out;
 }
 function upgrade() {
   start_button.style.visibility = 'hidden';
@@ -177,7 +129,6 @@ function startButton(event) {
     return;
   }
   final_transcript = '';
-  recognition.lang = select_dialect.value;
   recognition.start();
   ignore_onend = false;
   final_span.innerHTML = '';
@@ -185,7 +136,7 @@ function startButton(event) {
   start_img.src = 'mic-slash.gif';
   showInfo('info_allow');
   showButtons('none');
-  start_timestamp = event.timeStamp;
+  /* start_timestamp = event.timeStamp; */
 }
 function showInfo(s) {
   if (s) {
@@ -208,3 +159,50 @@ function showButtons(style) {
   copy_button.style.display = style;
   copy_info.style.display = 'none';
 }
+
+function findAnswerTo(text) {
+  function reqListener () {
+    var response = JSON.parse(this.response);
+    var text = response.output[0].actions.say.text;
+    var send;
+
+    if (text)
+      send = text;
+    else
+      send = "Sure. I'm LARRY!"
+    respond(send);
+  }
+
+  var requestText = text.replace(' ' , '+');
+  var oReq = new XMLHttpRequest();
+  oReq.addEventListener("load", reqListener);
+  oReq.open("GET", "https://jeannie.p.mashape.com/api?input="+text+"&locale=en&page=1&timeZone=%2B120");
+  oReq.setRequestHeader("X-Mashape-Key", "fyZW6PH24XmshnvJjBR5BZtQVlo3p1imUVajsnQU3DYTfLKUN6")
+  oReq.setRequestHeader("Accept", "application/json")
+  oReq.send();
+}
+
+function respond(text) {
+  var msg = new SpeechSynthesisUtterance(text);
+  var voice;
+
+  window.speechSynthesis.onvoiceschanged = function() {
+    var voices = window.speechSynthesis.getVoices();
+    voice = voices[21];
+    msg.voice = voice;
+  }
+
+  msg.volume = 1; // 0 to 1
+  msg.rate = 0.68; // 0.1 to 10
+  msg.pitch = 0.78; //0 to 2
+  msg.lang = 'en-US';
+
+  msg.onend = function(event) {
+    startButton()
+    console.log('Finished in ' + event.elapsedTime + ' seconds.');
+  };
+
+  console.log(msg)
+  window.speechSynthesis.speak(msg);
+}
+startButton()
