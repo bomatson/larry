@@ -125,7 +125,7 @@ if (!('webkitSpeechRecognition' in window)) {
       return;
     }
     console.log(final_transcript)
-    respond('i say this');
+    findAnswerTo(final_transcript)
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -217,6 +217,28 @@ function showButtons(style) {
   copy_info.style.display = 'none';
 }
 
+function findAnswerTo(text) {
+  function reqListener () {
+    var response = JSON.parse(this.response);
+    var text = response.output[0].actions.say.text;
+    var send;
+
+    if (text)
+      send = text;
+    else
+      send = "Sure. I'm LARRY!"
+    respond(send);
+  }
+
+  var requestText = text.replace(' ' , '+');
+  var oReq = new XMLHttpRequest();
+  oReq.addEventListener("load", reqListener);
+  oReq.open("GET", "https://jeannie.p.mashape.com/api?input="+text+"&locale=en&page=1&timeZone=%2B120");
+  oReq.setRequestHeader("X-Mashape-Key", "fyZW6PH24XmshnvJjBR5BZtQVlo3p1imUVajsnQU3DYTfLKUN6")
+  oReq.setRequestHeader("Accept", "application/json")
+  oReq.send();
+}
+
 function respond(text) {
   var msg = new SpeechSynthesisUtterance(text);
   var voice;
@@ -228,7 +250,7 @@ function respond(text) {
   }
 
   msg.volume = 1; // 0 to 1
-  msg.rate = 1; // 0.1 to 10
+  msg.rate = 0.6; // 0.1 to 10
   msg.pitch = 2; //0 to 2
   msg.lang = 'en-US';
 
