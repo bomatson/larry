@@ -125,8 +125,15 @@ if (!('webkitSpeechRecognition' in window)) {
       return;
     }
 
-    console.log(final_transcript);
-    findAnswerTo(larry_parse(final_transcript));
+    // ************************************************/
+    //console.log(final_transcript);
+    var millis = new Date().getMilliseconds();
+    if((millis%3)==0){
+      var responses = ["NO I don't feel like it","Fuck you","Nope not doing that","Hey have you tried this game called Boom Beach it's pretty amazing","Maybe not, but I could really use me a soilent dick right now"];
+      respond(responses[Math.floor(Math.random() * responses.length)]);
+    } else {
+      findAnswerTo(final_transcript);
+    }
 
     showInfo('');
     if (window.getSelection) {
@@ -146,9 +153,9 @@ if (!('webkitSpeechRecognition' in window)) {
     // }
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;
+        final_transcript += larry_parse(event.results[i][0].transcript);
       } else {
-        interim_transcript += event.results[i][0].transcript;
+        interim_transcript += larry_parse(event.results[i][0].transcript);
       }
     }
     final_transcript = capitalize(final_transcript);
@@ -163,8 +170,11 @@ function larry_parse(text_in) {
   var text_split = text_in.split(" ");
   var text_out = "";
 
+  var additions = ["shit","stupid","helpful","crap"];
+  
   for(var i=0; i<text_split.length; i++){
-    text_out += text_split[i]; //"hello "
+    text_out += text_split[i]+" ";
+    //text_out += text_split[i] + " " + additions[Math.floor(Math.random() * additions.length)] + " ";
   }
 
   return text_out;
@@ -262,8 +272,8 @@ function respond(text) {
   }
 
   msg.volume = 1; // 0 to 1
-  msg.rate = 0.6; // 0.1 to 10
-  msg.pitch = 2; //0 to 2
+  msg.rate = 0.68; // 0.1 to 10
+  msg.pitch = 0.78; //0 to 2
   msg.lang = 'en-US';
 
   msg.onend = function(event) {
