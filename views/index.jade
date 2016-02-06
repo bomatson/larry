@@ -6,24 +6,10 @@ block content
       | This is freaking LARRY
   #info
   .right
-    button#start_button(onclick='startButton(event)')
+    button#start_button
       img#start_img(src='mic.gif', alt='Start')
   #results
     span#final_span.final
     span#interim_span.interim
-    p
-  .center
-    .sidebyside(style='text-align:right')
-      button#copy_button.button(onclick='copyButton()')
-        | Copy and Paste
-      #copy_info.info
-        | Press Control-C to copy text.
-        br
-        | (Command-C on Mac.)
-    .sidebyside
-    p
-      #div_language
-        select#select_language(onchange='updateCountry()')
-        select#select_dialect
     p
     img#lazy(src='/images/lazy.jpg', alt='lazy')
