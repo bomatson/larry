@@ -51,7 +51,7 @@ if (!('webkitSpeechRecognition' in window)) {
     //console.log(final_transcript);
     var millis = new Date().getMilliseconds();
     if((millis%3)==0){
-      var responses = ["NO I don't feel like it","Fuck you","Nope not doing that","Hey have you tried this game called Boom Beach it's pretty amazing","Maybe not, but I could really use me a soilent dick right now"];
+      var responses = ["What the fuck do you want?","NO I don't feel like it","Fuck you","I can't even","Nope not doing that","Hey have you tried this game called Boom Beach it's pretty amazing","Maybe not, but I could really use me a soilent dick right now"];
       respond(responses[Math.floor(Math.random() * responses.length)]);
     } else {
       findAnswerTo(final_transcript);
