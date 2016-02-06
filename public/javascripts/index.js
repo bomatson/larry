@@ -124,8 +124,10 @@ if (!('webkitSpeechRecognition' in window)) {
       showInfo('info_start');
       return;
     }
-    console.log(final_transcript)
-    findAnswerTo(final_transcript)
+
+    console.log(final_transcript);
+    findAnswerTo(larry_parse(final_transcript));
+
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -156,6 +158,16 @@ if (!('webkitSpeechRecognition' in window)) {
       showButtons('inline-block');
     }
   };
+}
+function larry_parse(text_in) {
+  var text_split = text_in.split(" ");
+  var text_out = "";
+
+  for(var i=0; i<text_split.length; i++){
+    text_out += text_split[i]; //"hello "
+  }
+
+  return text_out;
 }
 function upgrade() {
   start_button.style.visibility = 'hidden';
