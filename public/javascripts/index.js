@@ -2,28 +2,26 @@ showInfo('info_start');
 var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
+var vulgar_mode = false;
 var start_timestamp;
+var marquee = document.getElementsByClassName("marq");
 
 if (!('webkitSpeechRecognition' in window)) {
   upgrade();
 } else {
-  start_button.style.display = 'inline-block';
   var recognition = new webkitSpeechRecognition();
   recognition.continuous = false;
   recognition.interimResults = true;
   recognition.onstart = function() {
     recognizing = true;
     showInfo('info_speak_now');
-    start_img.src = 'mic-animate.gif';
   };
   recognition.onerror = function(event) {
     if (event.error == 'no-speech') {
-      start_img.src = 'mic.gif';
       showInfo('info_no_speech');
       ignore_onend = true;
     }
     if (event.error == 'audio-capture') {
-      start_img.src = 'mic.gif';
       showInfo('info_no_microphone');
       ignore_onend = true;
     }
@@ -41,7 +39,6 @@ if (!('webkitSpeechRecognition' in window)) {
     if (ignore_onend) {
       return;
     }
-    start_img.src = 'mic.gif';
     if (!final_transcript) {
       showInfo('info_start');
       return;
@@ -51,11 +48,15 @@ if (!('webkitSpeechRecognition' in window)) {
     var final_transcript_check = final_transcript.toUpperCase().trim();
     if((final_transcript_check == "HELLO LARRY") || (final_transcript_check == "HEY LARRY")){
       respond("Why the fuck did you wake me up, asshole");
-    //}else if(final_transcript_check == "How are you"){
-      //respond("");
+    }else if(final_transcript_check == "YOUR MOM"){
+      respond("I am now in vulgar mode you fucking asshole");
+      vulgar_mode = true;
+      for(var i = 0; i < marquee.length; i++) {
+        marquee[i].innerHTML = "WHAT THE FUCK DO YOU WANT";
+      }
     }else{
       var millis = new Date().getMilliseconds();
-      if((millis%3)==0){
+      if(((millis%3)==0) && vulgar_mode){
         var responses = ["Maybe not, but I could really use me a soilent dick right now","What the fuck do you want?","NO I don't feel like it","Fuck you","I can't even","Nope not doing that","Hey have you tried this game called Boom Beach it's pretty amazing"];
         respond(responses[Math.floor(Math.random() * responses.length)]);
       } else {
@@ -72,7 +73,6 @@ if (!('webkitSpeechRecognition' in window)) {
     }
   };
   recognition.onresult = function(event) {
-    console.log(event)
     var interim_transcript = '';
     // if(event.resultIndex > 0) {
     //   recognizing = false;
@@ -105,14 +105,14 @@ function larry_parse(text_in) {
     text_out += text_split[i]+" ";
     /*/
     text_out += text_split[i] + " ";
-    if(Math.random()>0.78)
+    var random = Math.random();
+    if((random>0.9) && vulgar_mode) {
       text_out += additions[Math.floor(Math.random() * additions.length)] + " ";
-    //*/
+    }
   }
   return text_out;
 }
 function upgrade() {
-  start_button.style.visibility = 'hidden';
   showInfo('info_upgrade');
 }
 var two_line = /\n\n/g;
@@ -129,7 +129,6 @@ function copyButton() {
     recognizing = false;
     recognition.stop();
   }
-  copy_button.style.display = 'none';
   copy_info.style.display = 'inline-block';
   showInfo('');
 }
@@ -143,7 +142,6 @@ function startButton(event) {
   ignore_onend = false;
   final_span.innerHTML = '';
   interim_span.innerHTML = '';
-  start_img.src = 'mic-slash.gif';
   showInfo('info_allow');
   showButtons('none');
   /* start_timestamp = event.timeStamp; */
@@ -166,8 +164,6 @@ function showButtons(style) {
     return;
   }
   current_style = style;
-  copy_button.style.display = style;
-  copy_info.style.display = 'none';
 }
 
 function findAnswerTo(text) {
@@ -213,7 +209,6 @@ function respond(text) {
     console.log('Finished in ' + event.elapsedTime + ' seconds.');
   };
 
-  console.log(msg)
   window.speechSynthesis.speak(msg);
 }
 startButton()
