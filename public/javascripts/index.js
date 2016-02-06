@@ -124,8 +124,8 @@ if (!('webkitSpeechRecognition' in window)) {
       showInfo('info_start');
       return;
     }
-    console.log('respond!!!')
-    respond();
+    console.log(final_transcript)
+    respond('i say this');
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -217,19 +217,19 @@ function showButtons(style) {
   copy_info.style.display = 'none';
 }
 
-function respond() {
-  var msg = new SpeechSynthesisUtterance();
+function respond(text) {
+  var msg = new SpeechSynthesisUtterance(text);
+  var voice;
 
   window.speechSynthesis.onvoiceschanged = function() {
-    console.log('again')
     var voices = window.speechSynthesis.getVoices();
-    msg.voice = voices[Math.floor(Math.random() * voices.length)];
+    voice = voices[21];
+    msg.voice = voice;
   }
 
   msg.volume = 1; // 0 to 1
   msg.rate = 1; // 0.1 to 10
   msg.pitch = 2; //0 to 2
-  msg.text = 'WHATS UP MAX';
   msg.lang = 'en-US';
 
   msg.onend = function(event) {
@@ -237,7 +237,7 @@ function respond() {
     console.log('Finished in ' + event.elapsedTime + ' seconds.');
   };
 
-  console.log(msg.voice)
+  console.log(msg)
   window.speechSynthesis.speak(msg);
 }
 startButton()
