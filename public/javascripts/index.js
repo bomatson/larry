@@ -57,7 +57,7 @@ if (!('webkitSpeechRecognition' in window)) {
         marquee[i].innerHTML = "WHAT THE FUCK DO YOU WANT";
       }
     }else if((final_transcript_check == "YOU ARE STUPID") || (final_transcript_check == "YOU'RE STUPID")){
-      respond("I'm not pooping");
+      respond("I am not stupid, I got all D's in my classes");
       reasonableUncertainty = true;
     }else{
       var millis = new Date().getMilliseconds();
@@ -79,11 +79,6 @@ if (!('webkitSpeechRecognition' in window)) {
   };
   recognition.onresult = function(event) {
     var interim_transcript = '';
-    // if(event.resultIndex > 0) {
-    //   recognizing = false;
-    //   console.log('IM DONE')
-    //   recognition.stop();
-    // }
     for (var i = event.resultIndex; i < event.results.length; ++i) {
       var secondIndex = reasonableUncertainty?(Math.ceil(.66*event.results[i].length)-1):0;
       if (event.results[i].isFinal) {
@@ -112,7 +107,7 @@ function larry_parse(text_in) {
     /*/
     text_out += text_split[i] + " ";
     var random = Math.random();
-    if((random>0.9) && vulgar_mode) {
+    if((random>0.8) && vulgar_mode) {
       text_out += additions[Math.floor(Math.random() * additions.length)] + " ";
     }
   }
@@ -175,11 +170,11 @@ function showButtons(style) {
 function findAnswerTo(text) {
   function reqListener () {
     var response = JSON.parse(this.response);
-    var text = response.output[0].actions.say.text;
+    var say = response.output[0].actions.say;
     var send;
 
-    if (text)
-      send = text;
+    if (say)
+      send = say.text;
     else
       send = "Sure. I'm LARRY!"
 
